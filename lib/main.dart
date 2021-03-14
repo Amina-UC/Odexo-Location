@@ -59,21 +59,14 @@ class MapPageState extends State<MapPage> {
   @override
   void initState() {
     super.initState();
-    getAssigningStaffList();
+    getDriverAddress();
     // create an instance of Location
     location = new Location();
     polylinePoints = PolylinePoints();
 
     // subscribe to changes in the user's location
     // by "listening" to the location's onLocationChanged event
-    location.onLocationChanged().listen((LocationData cLoc) {
-      // cLoc contains the lat and long of the
-      // current user's position in real time,
-      // so we're holding on to it
-      // currentLocation = LatLng(cLoc.latitude,cLoc.longitude);
-      currentLocation = LatLng(9.9691,76.3217);
-      updatePinOnMap();
-    });
+
     // set custom marker pins
     // setSourceAndDestinationIcons();
     // set the initial location
@@ -92,7 +85,7 @@ class MapPageState extends State<MapPage> {
     });
   }
 
-  Future getAssigningStaffList() async {
+  Future getDriverAddress() async {
     final response = await http.get(
       //https://carecanadajobs.com/public/api/staffassigntickets?ticket_id=47
       Uri.encodeFull("https://oddexo.com/oddexo/services/API/autoServiceApi.php?service=driverLocation&driverid=856"),
@@ -108,6 +101,30 @@ class MapPageState extends State<MapPage> {
       _markers.clear();
     });
     showPinsOnMap();
+  }
+
+
+  Future updateLocation() async {
+    final response = await http.get(
+      //https://carecanadajobs.com/public/api/staffassigntickets?ticket_id=47
+      Uri.encodeFull("https://oddexo.com/oddexo/services/API/autoServiceApi.php?service=driverLocationStatus&driverid=856&latitude="+currentLocation.latitude.toString()+"&longitude="+currentLocation.longitude.toString()),
+    );
+    var qData = json.decode(response.body);
+    print("newww locccc "+qData.toString());
+    location.onLocationChanged().listen((LocationData cLoc) {
+      // cLoc contains the lat and long of the
+      // current user's position in real time,
+      // so we're holding on to it
+      // currentLocation = LatLng(cLoc.latitude,cLoc.longitude);
+      setState(() {
+        currentLocation = LatLng(cLoc.latitude,cLoc.longitude);
+      });
+      updatePinOnMap();
+    });
+    // setState(() {
+    //   _markers.clear();
+    // });
+    // showPinsOnMap();
   }
 
   static Future<Uint8List> getBytesFromAsset(String path, int width) async {
@@ -189,9 +206,17 @@ class MapPageState extends State<MapPage> {
     }
   }
   final homeScaffoldKey = GlobalKey<ScaffoldState>();
+  _timer(){
+    return Timer(
+        Duration(seconds: 30), (){
+      updateLocation();
+    }
+    );
 
+  }
   @override
   Widget build(BuildContext context) {
+   _timer();
     CameraPosition initialCameraPosition = CameraPosition(
         zoom: CAMERA_ZOOM,
         tilt: CAMERA_TILT,
