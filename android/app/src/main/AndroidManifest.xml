@@ -14,10 +14,11 @@
          FlutterApplication and put your custom class here. -->
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="infowindow"
+        android:label="LocTrack"
         android:icon="@mipmap/ic_launcher">
+        <!--AIzaSyAm22_7Hj0aHN09DvP-VmaXSk64dm1WSfg-->
         <meta-data android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyAm22_7Hj0aHN09DvP-VmaXSk64dm1WSfg"/>
+            android:value="AIzaSyABBH07rVnsmRDsmIjtpfHiBuwczmyVyLk"/>
 <!--        <meta-data android:name="com.google.android.geo.API_KEY" android:value="API_KEY"/>-->
         <activity
             android:name=".MainActivity"
